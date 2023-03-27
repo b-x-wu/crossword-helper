@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "npx tsc && node ./dist/app.js"
+  },
   "devDependencies": {
     "typescript": "^5.0.2"
   }

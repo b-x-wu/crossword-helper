@@ -11,13 +11,16 @@ for (let x = 0; x < 5; x++) {
         crossword.mutateSquareAtPosition(position, value)
     }
 }
-
-
-crossword.mutateSquareAtPosition({x: 1, y: 1}, SquareValue.DARK_SQUARE)
-console.log(crossword.getHorizontalWord(crossword.getSquareAt({x:2, y:1})))
-
-// console.log(crossword.getVerticalWord(crossword.getSquareAt(1, 1).down ?? crossword.getSquareAt(0,0)))
-// crossword.mutateSquareAtPosition({x: 1, y: 1}, SquareValue.Z)
-
+console.log('INITIAL BOARD')
 crossword.displayBoard()
-// crossword.displayDictionaries()
+crossword.displayDictionaries()
+
+console.log('ADDING DARK SQUARE')
+crossword.mutateSquareAtPosition({x: 1, y: 1}, SquareValue.DARK_SQUARE)
+crossword.displayBoard()
+crossword.displayDictionaries()
+
+console.log('REMOVING DARK SQUARE')
+crossword.mutateSquareAtPosition({x: 1, y: 1}, SquareValue.Z)
+crossword.displayBoard()
+crossword.displayDictionaries()

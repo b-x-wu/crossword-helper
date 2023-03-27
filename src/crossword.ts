@@ -131,6 +131,7 @@ export default class Crossword {
         const wordPosition: WordPosition = { start: startPosition, end: endPosition }
         const word = horizontalDictionary.get(wordPosition)
         if (word == null) {
+            console.log(wordPosition)
             throw new Error('Cannot find horizontal word at this square')
         }
 
@@ -227,7 +228,7 @@ export default class Crossword {
             }
 
             if (square.down != null) {
-                square.down.left = null
+                square.down.up = null
                 const newDownWord: Word = {
                     squareValues: verticalWordData.word.squareValues.slice(verticalWordData.index + 1),
                     orientation: Orientation.VERTICAL,
