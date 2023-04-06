@@ -1,5 +1,3 @@
-// TODO: this is a workaround because i forgor about SameValueZero oops
-//       definitely not the right way to do it
 import { Orientation, Word, WordPosition, type OrientedDictionaryKey, SquareValue, squareValueToString } from "./types";
 
 export class OrientedDictionary {
@@ -73,7 +71,7 @@ export class OrientedDictionary {
      * Get the words in the dictionary in sorted order
      * @returns the words in the dictionary in order of starting positions
      */
-    getWords(): Word[] {
+    getSortedWords(): Word[] {
         return this.getSortedEntries().map(([key, word]) => word)
     }
 

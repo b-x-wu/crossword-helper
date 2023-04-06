@@ -5,7 +5,7 @@ export default class Crossword {
     readonly width: number
     readonly height: number
     readonly dictionary: CrosswordDictionary
-    private squareArray: Square[][]
+    squareArray: Square[][]
     // TODO: add metadata fields
 
     constructor(width: number, height: number) {
@@ -80,6 +80,10 @@ export default class Crossword {
     }
 
     getSquareAt(squarePosition: SquarePosition): Square {
+        if (!this.isInBounds(squarePosition.x, squarePosition.y)) {
+            throw new Error('Position is out of bounds')
+        }
+
         return this.squareArray[squarePosition.y][squarePosition.x]
     }
 
@@ -335,7 +339,7 @@ export default class Crossword {
         this.mutateSquare(this.getSquareAt(squarePosition), newSquareValue)
     }
 
-    displayBoard(): void {
+    printBoard(): void {
         const line: string = '-'.repeat(2 * this.width + 1)
         console.log(line)
         for (let y = 0; y < this.height; y++) {
@@ -344,7 +348,7 @@ export default class Crossword {
         }
     }
 
-    displayDictionaries(): void {
+    printDictionary(): void {
         console.log('HORIZONTAL\n')
         this.dictionary.horizontalDictionary.print()
 
