@@ -73,4 +73,4 @@ export interface Word {
     orientation: Orientation
 }
 
-export type Dictionary = Map<WordPosition, Word>
+export type OrientedDictionaryKey = number
