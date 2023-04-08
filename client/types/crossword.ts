@@ -214,6 +214,7 @@ export default class Crossword {
         }
 
         square.value = SquareValue.DARK_SQUARE
+        console.log(`square value is ${square.value} and getting from the array gives us ${this.getSquareAt(square.position).value}`)
     }
 
     private mutateSquareFromDark(square: Square, newSquareValue: SquareValue): void {
