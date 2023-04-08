@@ -9,33 +9,29 @@ interface CrosswordComponentProps {
 }
 
 export const CrosswordComponent = ({crossword}: CrosswordComponentProps): JSX.Element => {
-    const [selectedSquarePosition, setSelectedSquarePosition] = useState<null | SquarePosition>(null) // this state might be passed up
-    const [wordOrientation, setWordOrientation] = useState<Orientation>(Orientation.HORIZONTAL)
-    const [squarePositionsInSelectedWord, setSquarePositionsInSelectedWord] = useState<SquarePosition[]>([])
+    const [selectedSquare, setSelectedSquare] = useState<null | Square>(null) // this state might be passed up
+    const [squaresInSelectedWord, setSquaresInSelectedWord] = useState<Square[]>([])
 
     useEffect(() => {
-        if (selectedSquarePosition != null) {
-            const selectedSquare: Square = crossword.getSquareAt(selectedSquarePosition)
-            let selectedWordPosition: WordPosition | undefined
-            if (wordOrientation === Orientation.HORIZONTAL) {
-                selectedWordPosition = crossword.getHorizontalWord(selectedSquare)?.position
-            } else {
-                selectedWordPosition = crossword.getVerticalWord(selectedSquare)?.position
+        if (selectedSquare != null) {
+            const selectedHorizontalWordPosition: WordPosition | undefined = crossword.getHorizontalWord(selectedSquare)?.position
+            const selectedVerticalWordPosition: WordPosition | undefined = crossword.getVerticalWord(selectedSquare)?.position
+            
+            let newSquaresInSelectedWord: Square[] = []
+            if (selectedHorizontalWordPosition != null) {
+                newSquaresInSelectedWord = [...newSquaresInSelectedWord, ...newSquaresInSelectedWord.concat(crossword.wordPositionToSquares(selectedHorizontalWordPosition))]
             }
-
-            if (selectedWordPosition == null) { return }
-            setSquarePositionsInSelectedWord(Crossword.wordPositionToSquarePositions(selectedWordPosition))
+            if (selectedVerticalWordPosition != null) {
+                newSquaresInSelectedWord = [...newSquaresInSelectedWord, ...newSquaresInSelectedWord.concat(crossword.wordPositionToSquares(selectedVerticalWordPosition))]
+            }
+            setSquaresInSelectedWord(newSquaresInSelectedWord)
         }
-    }, [selectedSquarePosition, wordOrientation])
+    }, [selectedSquare])
 
-    const handleClickGenerator = (squarePosition: SquarePosition): React.MouseEventHandler<HTMLDivElement> => {
+    const handleClickGenerator = (squarePosition: Square): React.MouseEventHandler<HTMLDivElement> => {
         return (event) => {
             event.preventDefault()
-            if (squarePosition.x === selectedSquarePosition?.x && squarePosition.y === selectedSquarePosition.y) {
-                setWordOrientation(wordOrientation === Orientation.HORIZONTAL ? Orientation.VERTICAL : Orientation.HORIZONTAL)
-                return
-            }
-            setSelectedSquarePosition(squarePosition)
+            setSelectedSquare(squarePosition)
         }
     }
 
@@ -44,8 +40,8 @@ export const CrosswordComponent = ({crossword}: CrosswordComponentProps): JSX.El
 
     const squareComponents: Array<React.ReactElement<SquareComponentProps, any>> = crossword.squareArray.flat().map(
         (square) => {
-            const isInSelectedWord: boolean = squarePositionsInSelectedWord == null ? false : squarePositionsInSelectedWord.reduce<boolean>((prev, cur) => {
-                return prev || (cur.x === square.position.x && cur.y === square.position.y)
+            const isInSelectedWord: boolean = squaresInSelectedWord == null ? false : squaresInSelectedWord.reduce<boolean>((prev, cur) => {
+                return prev || (cur.position.x === square.position.x && cur.position.y === square.position.y)
             }, false)
             return (
                 <SquareComponent
@@ -53,8 +49,8 @@ export const CrosswordComponent = ({crossword}: CrosswordComponentProps): JSX.El
                     square={square}
                     width={SQUARE_WIDTH}
                     height={SQUARE_HEIGHT}
-                    handleClick={handleClickGenerator(square.position)}
-                    isSelected={selectedSquarePosition != null && selectedSquarePosition.x === square.position.x && selectedSquarePosition.y === square.position.y}
+                    handleClick={handleClickGenerator(square)}
+                    isSelected={selectedSquare != null && selectedSquare.position.x === square.position.x && selectedSquare.position.y === square.position.y}
                     isInSelectedWord={isInSelectedWord}
                 />
             )

@@ -375,4 +375,9 @@ export default class Crossword {
 
         throw new Error('WordPosition start and end do not match x or y dimension.')
     }
+
+    wordPositionToSquares(wordPosition: WordPosition): Square[] {
+        const squarePositions = Crossword.wordPositionToSquarePositions(wordPosition)
+        return squarePositions.map((squarePosition) => this.getSquareAt(squarePosition))
+    }
 }
