@@ -355,4 +355,24 @@ export default class Crossword {
         console.log('VERTICAL\n')
         this.dictionary.verticalDictionary.print()
     }
+
+    static wordPositionToSquarePositions(wordPosition: WordPosition): SquarePosition[] {
+        if (wordPosition.start.x === wordPosition.end.x) {
+            const squarePositions = []
+            for (let yPosition = wordPosition.start.y; yPosition <= wordPosition.end.y; yPosition++) {
+                squarePositions.push({x: wordPosition.start.x, y: yPosition} as SquarePosition)
+            }
+            return squarePositions
+        }
+        
+        if (wordPosition.start.y === wordPosition.end.y) {
+            const squarePositions = []
+            for (let xPosition = wordPosition.start.x; xPosition <= wordPosition.end.x; xPosition++) {
+                squarePositions.push({y: wordPosition.start.y, x: xPosition} as SquarePosition)
+            }
+            return squarePositions
+        }
+
+        throw new Error('WordPosition start and end do not match x or y dimension.')
+    }
 }
