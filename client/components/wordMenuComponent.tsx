@@ -13,7 +13,6 @@ export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, h
     const [squareValueInForm, setSquareValueInForm] = useState<string>(squareValueToString(squareValue))
 
     useEffect(() => {
-        console.log('square value fires use effect')
         setSquareValueInForm(squareValueToString(squareValue))
         setIsDarkSquareInForm(squareValue === SquareValue.DARK_SQUARE)
     }, [squareValue])
