@@ -1,8 +1,8 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import { SquareComponent } from '../components/squareComponent'
 import { SquarePosition, SquareValue } from '../types/types'
 import Crossword from '../types/crossword'
+import { BoardComponent } from '../components/boardComponent'
 import { CrosswordComponent } from '../components/crosswordComponent'
 
 const App = () => {
@@ -19,7 +19,6 @@ const App = () => {
 
     return (
         <>
-            This is a React App! Modify src/index.jsx to get started.
             <CrosswordComponent crossword={crossword} />
         </>
     )
