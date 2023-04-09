@@ -13,8 +13,13 @@ export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, h
     const [squareValueInForm, setSquareValueInForm] = useState<string>(squareValueToString(squareValue))
 
     useEffect(() => {
-        setSquareValueInForm(squareValueToString(squareValue))
         setIsDarkSquareInForm(squareValue === SquareValue.DARK_SQUARE)
+
+        if (squareValue === SquareValue.BLANK_SQUARE) {
+            setSquareValueInForm('')
+            return
+        }
+        setSquareValueInForm(squareValueToString(squareValue))
     }, [squareValue])
 
     const handleSquareValueInFormChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -22,7 +27,7 @@ export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, h
         const formValue = event.target.value
         if (formValue.length > 1) { return }
         if (formValue.length < 1) {
-            setSquareValueInForm('')
+            handleMutateSquare(SquareValue.BLANK_SQUARE)(event)
             return
         }
         if (formValue.charCodeAt(0) >= 65 && formValue.charCodeAt(0) < 91) {

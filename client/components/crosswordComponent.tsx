@@ -44,7 +44,6 @@ export const CrosswordComponent = ({ crossword }: CrosswordComponentProps): JSX.
             event.preventDefault()
             if (selectedSquare != null) {
                 crossword.mutateSquareAtPosition(selectedSquare.position, newSquareValue)
-                crossword.printBoard()
                 setSelectedSquare({...crossword.getSquareAt(selectedSquare.position)})
                 setSquareArray(crossword.squareArray.flat().map((square) => ({...square})))
             }

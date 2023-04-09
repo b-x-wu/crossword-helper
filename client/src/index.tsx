@@ -15,7 +15,6 @@ const App = () => {
             crossword.mutateSquareAtPosition(position, value)
         }
     }
-    crossword.mutateSquareAtPosition({x: 0, y: 0}, SquareValue.DARK_SQUARE)
 
     return (
         <>
