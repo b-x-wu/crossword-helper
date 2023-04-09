@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react"
 import Crossword from "../types/crossword"
-import { Square, SquareValue, Word, WordPosition } from "../types/types"
+import { Orientation, Square, SquareValue, Word, WordPosition } from "../types/types"
 import { BoardComponent } from "./boardComponent"
 import { WordMenuComponent } from "./wordMenuComponent"
+import { OrientedDictionary } from "../types/dictionary"
 
 interface CrosswordComponentProps {
     crossword: Crossword
@@ -48,7 +49,47 @@ export const CrosswordComponent = ({ crossword }: CrosswordComponentProps): JSX.
                 setSquareArray(crossword.squareArray.flat().map((square) => ({...square})))
             }
         }
-    } 
+    }
+
+    const handleChangeVerticalClue: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        event.preventDefault()
+        if (selectedVerticalWordPosition == null) { return } 
+        crossword.dictionary.verticalDictionary.setClue(selectedVerticalWordPosition, event.target.value)
+        // TODO: this is used to force a dom reload which is not particularly performant
+        setSelectedVerticalWordPosition({
+            start: {...selectedVerticalWordPosition.start},
+            end: {...selectedVerticalWordPosition.end}
+        })
+    }
+    
+    const handleChangeHorizontalClue: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        event.preventDefault()
+        if (selectedHorizontalWordPosition == null) { return }
+        crossword.dictionary.horizontalDictionary.setClue(selectedHorizontalWordPosition, event.target.value)
+        if (selectedHorizontalWordPosition != null) {
+            // TODO: this is used to force a dom reload which is not particularly performant
+            setSelectedHorizontalWordPosition({
+                start: {...selectedHorizontalWordPosition.start},
+                end: {...selectedHorizontalWordPosition.end}
+            })
+        }
+    }
+
+    const computeSelectedWord = (selectedWordPosition: WordPosition | null, orientation: Orientation): Word | undefined => {
+        if (selectedWordPosition == null) { return undefined }
+
+        const orientedDictionary: OrientedDictionary = orientation === Orientation.HORIZONTAL
+            ? crossword.dictionary.horizontalDictionary 
+            : crossword.dictionary.verticalDictionary
+        const word = orientedDictionary.get(selectedWordPosition)
+        if (word == null) { return undefined }
+        return { // return copy for rerendering
+            squareValues: [...word.squareValues],
+            orientation: word.orientation,
+            length: word.length,
+            clue: word.clue
+        }
+    }
 
     return (
         <>
@@ -65,8 +106,10 @@ export const CrosswordComponent = ({ crossword }: CrosswordComponentProps): JSX.
                 selectedSquare == null 
                 ? <></> 
                 :<WordMenuComponent
-                    horizontalWord={selectedSquare == null ? undefined : crossword.getHorizontalWord(selectedSquare)?.word}
-                    verticalWord={selectedSquare == null ? undefined : crossword.getVerticalWord(selectedSquare)?.word}
+                    horizontalWord={computeSelectedWord(selectedHorizontalWordPosition, Orientation.HORIZONTAL)}
+                    verticalWord={computeSelectedWord(selectedVerticalWordPosition, Orientation.VERTICAL)}
+                    handleChangeHorizontalClue={handleChangeHorizontalClue}
+                    handleChangeVerticalClue={handleChangeVerticalClue}
                     handleMutateSquare={handleMutateSquare}
                     squareValue={selectedSquare.value}
                 />

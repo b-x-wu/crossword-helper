@@ -1,22 +1,34 @@
 import React, { useEffect, useState } from "react"
-import { Square, SquareValue, Word, squareValueToString, stringToSquareValue } from "../types/types"
+import { Orientation, Square, SquareValue, Word, squareValueToString, stringToSquareValue } from "../types/types"
 interface WordMenuComponentProps {
     horizontalWord: Word | undefined
     verticalWord: Word | undefined
     squareValue: SquareValue
+    handleChangeHorizontalClue: React.ChangeEventHandler<HTMLInputElement>
+    handleChangeVerticalClue: React.ChangeEventHandler<HTMLInputElement>
     handleMutateSquare: (newSquareValue: SquareValue) => React.ChangeEventHandler<HTMLInputElement>
 }
-export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, handleMutateSquare }: WordMenuComponentProps): JSX.Element => {
+export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, handleChangeHorizontalClue, handleChangeVerticalClue, handleMutateSquare }: WordMenuComponentProps): JSX.Element => {
     const [isDarkSquareInForm, setIsDarkSquareInForm] = useState<boolean>(squareValue === SquareValue.DARK_SQUARE)
     const [squareValueInForm, setSquareValueInForm] = useState<string>(squareValueToString(squareValue))
+    const [horizontalClueInForm, setHorizontalClueInForm] = useState<string>('')
+    const [verticalClueInForm, setVerticalClueInForm] = useState<string>('')
+
     useEffect(() => {
         setIsDarkSquareInForm(squareValue === SquareValue.DARK_SQUARE)
         if (squareValue === SquareValue.BLANK_SQUARE || squareValue === SquareValue.DARK_SQUARE) {
             setSquareValueInForm('')
-            return
+        } else {
+            setSquareValueInForm(squareValueToString(squareValue))
         }
-        setSquareValueInForm(squareValueToString(squareValue))
-    }, [squareValue])
+
+        if (horizontalWord != null) {
+            setHorizontalClueInForm(horizontalWord.clue)
+        }
+        if (verticalWord != null) {
+            setVerticalClueInForm(verticalWord.clue)
+        }
+    }, [squareValue, horizontalWord, verticalWord])
     const handleSquareValueInFormChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         event.preventDefault()
         const formValue = event.target.value
@@ -38,23 +50,29 @@ export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, h
         event.preventDefault()
         handleMutateSquare(isDarkSquareInForm ? SquareValue.BLANK_SQUARE : SquareValue.DARK_SQUARE)(event)
     }
-    const horizontalWordInformation = horizontalWord == null ? <></> : (
-        <div>
-            <div>Horizontal Word</div>
-            <div>{horizontalWord.squareValues.map((squareValue) => squareValueToString(squareValue)).join('')}</div>
-            <div>{horizontalWord.clue === '' ? '[no clue]' : horizontalWord.clue}</div>
-        </div>
-    )
-    const verticalWordInformation = verticalWord == null ? <></> : (
-        <div>
-            <div>Vertical Word</div>
-            <div>{verticalWord.squareValues.map((squareValue) => squareValueToString(squareValue)).join('')}</div>
-            <div>{verticalWord.clue === '' ? '[no clue]' : verticalWord.clue}</div>
-        </div>
-    )
+
+    // TODO: this should be moved to a component
+    const createWordInformationForm = (orientation: Orientation): JSX.Element => {
+        const word = orientation === Orientation.HORIZONTAL ? horizontalWord : verticalWord
+        if (word == null) { return <></> }
+        const orientationString = orientation === Orientation.HORIZONTAL ? "Horizontal" : "Vertical"
+        const clueInForm = orientation === Orientation.HORIZONTAL ? horizontalClueInForm : verticalClueInForm
+        const changeClueHandler = orientation === Orientation.HORIZONTAL ? handleChangeHorizontalClue : handleChangeVerticalClue
+        return (
+            <div>
+                <div>{orientationString} Word</div>
+                <div>{word.squareValues.map((squareValue) => squareValueToString(squareValue)).join('')}</div>
+                <input
+                    value={clueInForm}
+                    onChange={changeClueHandler}
+                ></input>
+            </div>
+        ) 
+    }
+
     return (
-        <>
-            <form className="m-6">
+        <div className="flex flex-col m-6 gap-y-2">
+            <form>
                 <div className="flex flex-col gap-y-1">
                     <label
                         htmlFor="square-value-input"
@@ -81,8 +99,8 @@ export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, h
                     ></input>
                 </div>
             </form>
-            {horizontalWordInformation}
-            {verticalWordInformation}
-        </>
+            {createWordInformationForm(Orientation.HORIZONTAL)}
+            {createWordInformationForm(Orientation.VERTICAL)}
+        </div>
     )
 }
