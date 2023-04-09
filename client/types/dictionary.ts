@@ -12,27 +12,35 @@ export class OrientedDictionary {
     static wordPositionToOrientedDictionaryKey(wordPosition: WordPosition): OrientedDictionaryKey {
         // this implies that the max size of a board is
         // 2^13 by 2^13
-        let key = wordPosition.start.x
-        key = key << 13
-        key = key + wordPosition.start.y
-        key = key << 13
-        key = key + wordPosition.end.x
-        key = key << 13
-        key = key + wordPosition.end.y
-        return key
+        // let key = wordPosition.start.x
+        // key = key << 13
+        // key = key + wordPosition.start.y
+        // key = key << 13
+        // key = key + wordPosition.end.x
+        // key = key << 13
+        // key = key + wordPosition.end.y
+        // return key
+        return wordPosition.start.x * Math.pow(2, 13 * 3) + wordPosition.start.y * Math.pow(2, 13 * 2) + wordPosition.end.x * Math.pow(2, 13) + wordPosition.end.y
     }
 
     static orientedDictionaryKeyToWordPosition(key: OrientedDictionaryKey): WordPosition {
-        const bitMask = 8191
-        const endY = key & bitMask
-        key = key >> 13
-        const endX = key & bitMask
-        key = key >> 13
-        const startY = key & bitMask
-        key = key >> 13
+        // const bitMask = 8191
+        // const endY = key & bitMask
+        // key = key >> 13
+        // const endX = key & bitMask
+        // key = key >> 13
+        // const startY = key & bitMask
+        // key = key >> 13
+        const startX = Math.floor(key / Math.pow(2, 13 * 3))
+        key -= startX * Math.pow(2, 13 * 3)
+        const startY = Math.floor(key / Math.pow(2, 13 * 2))
+        key -= startY * Math.pow(2, 13 * 2)
+        const endX = Math.floor(key / Math.pow(2, 13))
+        key -= endX * Math.pow(2, 13)
+        const endY = key
         return {
             start: {
-                x: key,
+                x: startX,
                 y: startY
             },
             end: {
@@ -80,6 +88,7 @@ export class OrientedDictionary {
             const wordPosition = OrientedDictionary.orientedDictionaryKeyToWordPosition(key)
             const wordText: string = word.squareValues.map((squareValue: SquareValue) => squareValueToString(squareValue)).join('')
             console.log(`\t(${wordPosition.start.x}, ${wordPosition.start.y}) to (${wordPosition.end.x}, ${wordPosition.end.y})`)
+            console.log(`\tkey: ${key}`)
             console.log(`\t${wordText.trim() === '' ? '[No word]' : wordText}`)
             console.log(`\t${word.clue === '' ? '[No clue]' : word.clue}`)
             console.log()

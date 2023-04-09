@@ -35,11 +35,20 @@ export const squareValueToString = (squareValue: SquareValue): string => {
         return "█"
     }
     if (squareValue === SquareValue.BLANK_SQUARE) {
-        return " "
+        return "_"
     }
 
     const charCode: number = squareValue + 64
     return String.fromCharCode(charCode)
+}
+
+export const stringToSquareValue = (string: string): SquareValue => {
+    const charCode = string.charCodeAt(0)
+    if (charCode === 32) { return SquareValue.BLANK_SQUARE }
+    if (charCode >= 65 && charCode < 91) {
+        return charCode - 64
+    }
+    return SquareValue.DARK_SQUARE
 }
 
 export enum Orientation {

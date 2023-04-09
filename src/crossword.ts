@@ -1,11 +1,11 @@
 import { Orientation, Square, SquarePosition, SquareValue, squareValueToString, Word, WordPosition } from './types'
-import Dictionary, { OrientedDictionary, CrosswordDictionary } from './dictionary'
+import { OrientedDictionary, CrosswordDictionary } from './dictionary'
 
 export default class Crossword {
     readonly width: number
     readonly height: number
     readonly dictionary: CrosswordDictionary
-    private squareArray: Square[][]
+    squareArray: Square[][]
     // TODO: add metadata fields
 
     constructor(width: number, height: number) {
@@ -56,7 +56,9 @@ export default class Crossword {
                 clue: "",
                 length: this.height,
                 orientation: Orientation.VERTICAL
-            } 
+            }
+            // console.log(wordPosition)
+            console.log(OrientedDictionary.orientedDictionaryKeyToWordPosition(OrientedDictionary.wordPositionToOrientedDictionaryKey(wordPosition)))
             this.dictionary.verticalDictionary.set(wordPosition, word)
         }
 
@@ -80,6 +82,10 @@ export default class Crossword {
     }
 
     getSquareAt(squarePosition: SquarePosition): Square {
+        if (!this.isInBounds(squarePosition.x, squarePosition.y)) {
+            throw new Error('Position is out of bounds')
+        }
+
         return this.squareArray[squarePosition.y][squarePosition.x]
     }
 
@@ -104,7 +110,6 @@ export default class Crossword {
         const word = this.dictionary.horizontalDictionary.get(wordPosition)
 
         if (word == null) {
-            console.log(wordPosition)
             throw new Error('Cannot find horizontal word at this square')
         }
 
@@ -132,6 +137,8 @@ export default class Crossword {
         const word = this.dictionary.verticalDictionary.get(wordPosition)
         
         if (word == null) {
+            this.printBoard()
+            this.printDictionary()
             throw new Error('Cannot find vertical word at this square')
         }
 
@@ -239,6 +246,7 @@ export default class Crossword {
                 newHorizontalWord.squareValues.unshift(...leftWordData.word.squareValues)
                 newHorizontalWord.length += leftWordData.word.length
             }
+            square.left.right = square
         }
         
         if (square.right != null) {
@@ -249,6 +257,7 @@ export default class Crossword {
                 newHorizontalWord.squareValues.push(...rightWordData.word.squareValues)
                 newHorizontalWord.length += rightWordData.word.length
             }
+            square.right.left = square
         }
 
         this.dictionary.horizontalDictionary.set(
@@ -273,6 +282,7 @@ export default class Crossword {
                 newVerticalWord.squareValues.unshift(...upWordData.word.squareValues)
                 newVerticalWord.length += upWordData.word.length
             }
+            square.up.down = square
         }
         
         if (square.down != null) {
@@ -283,6 +293,7 @@ export default class Crossword {
                 newVerticalWord.squareValues.push(...downWordData.word.squareValues)
                 newVerticalWord.length += downWordData.word.length
             }
+            square.down.up = square
         }
 
         this.dictionary.verticalDictionary.set(
@@ -335,7 +346,7 @@ export default class Crossword {
         this.mutateSquare(this.getSquareAt(squarePosition), newSquareValue)
     }
 
-    displayBoard(): void {
+    printBoard(): void {
         const line: string = '-'.repeat(2 * this.width + 1)
         console.log(line)
         for (let y = 0; y < this.height; y++) {
@@ -344,11 +355,36 @@ export default class Crossword {
         }
     }
 
-    displayDictionaries(): void {
+    printDictionary(): void {
         console.log('HORIZONTAL\n')
         this.dictionary.horizontalDictionary.print()
 
         console.log('VERTICAL\n')
         this.dictionary.verticalDictionary.print()
+    }
+
+    static wordPositionToSquarePositions(wordPosition: WordPosition): SquarePosition[] {
+        if (wordPosition.start.x === wordPosition.end.x) {
+            const squarePositions = []
+            for (let yPosition = wordPosition.start.y; yPosition <= wordPosition.end.y; yPosition++) {
+                squarePositions.push({x: wordPosition.start.x, y: yPosition} as SquarePosition)
+            }
+            return squarePositions
+        }
+        
+        if (wordPosition.start.y === wordPosition.end.y) {
+            const squarePositions = []
+            for (let xPosition = wordPosition.start.x; xPosition <= wordPosition.end.x; xPosition++) {
+                squarePositions.push({y: wordPosition.start.y, x: xPosition} as SquarePosition)
+            }
+            return squarePositions
+        }
+
+        throw new Error('WordPosition start and end do not match x or y dimension.')
+    }
+
+    wordPositionToSquares(wordPosition: WordPosition): Square[] {
+        const squarePositions = Crossword.wordPositionToSquarePositions(wordPosition)
+        return squarePositions.map((squarePosition) => this.getSquareAt(squarePosition))
     }
 }

@@ -56,7 +56,9 @@ export default class Crossword {
                 clue: "",
                 length: this.height,
                 orientation: Orientation.VERTICAL
-            } 
+            }
+            // console.log(wordPosition)
+            console.log(OrientedDictionary.orientedDictionaryKeyToWordPosition(OrientedDictionary.wordPositionToOrientedDictionaryKey(wordPosition)))
             this.dictionary.verticalDictionary.set(wordPosition, word)
         }
 
@@ -135,6 +137,8 @@ export default class Crossword {
         const word = this.dictionary.verticalDictionary.get(wordPosition)
         
         if (word == null) {
+            this.printBoard()
+            this.printDictionary()
             throw new Error('Cannot find vertical word at this square')
         }
 
@@ -242,6 +246,7 @@ export default class Crossword {
                 newHorizontalWord.squareValues.unshift(...leftWordData.word.squareValues)
                 newHorizontalWord.length += leftWordData.word.length
             }
+            square.left.right = square
         }
         
         if (square.right != null) {
@@ -252,6 +257,7 @@ export default class Crossword {
                 newHorizontalWord.squareValues.push(...rightWordData.word.squareValues)
                 newHorizontalWord.length += rightWordData.word.length
             }
+            square.right.left = square
         }
 
         this.dictionary.horizontalDictionary.set(
@@ -276,6 +282,7 @@ export default class Crossword {
                 newVerticalWord.squareValues.unshift(...upWordData.word.squareValues)
                 newVerticalWord.length += upWordData.word.length
             }
+            square.up.down = square
         }
         
         if (square.down != null) {
@@ -286,6 +293,7 @@ export default class Crossword {
                 newVerticalWord.squareValues.push(...downWordData.word.squareValues)
                 newVerticalWord.length += downWordData.word.length
             }
+            square.down.up = square
         }
 
         this.dictionary.verticalDictionary.set(

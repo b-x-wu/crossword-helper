@@ -12,15 +12,15 @@ for (let x = 0; x < 5; x++) {
     }
 }
 console.log('INITIAL BOARD')
-crossword.displayBoard()
-crossword.displayDictionaries()
+crossword.printBoard()
+crossword.printDictionary()
 
 console.log('ADDING DARK SQUARE')
 crossword.mutateSquareAtPosition({x: 1, y: 1}, SquareValue.DARK_SQUARE)
-crossword.displayBoard()
-crossword.displayDictionaries()
+crossword.printBoard()
+crossword.printDictionary()
 
 console.log('REMOVING DARK SQUARE')
 crossword.mutateSquareAtPosition({x: 1, y: 1}, SquareValue.Z)
-crossword.displayBoard()
-crossword.displayDictionaries()
+crossword.printBoard()
+crossword.printDictionary()

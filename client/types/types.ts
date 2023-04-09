@@ -35,7 +35,7 @@ export const squareValueToString = (squareValue: SquareValue): string => {
         return "█"
     }
     if (squareValue === SquareValue.BLANK_SQUARE) {
-        return " "
+        return "_"
     }
 
     const charCode: number = squareValue + 64

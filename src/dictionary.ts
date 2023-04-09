@@ -1,5 +1,3 @@
-// TODO: this is a workaround because i forgor about SameValueZero oops
-//       definitely not the right way to do it
 import { Orientation, Word, WordPosition, type OrientedDictionaryKey, SquareValue, squareValueToString } from "./types";
 
 export class OrientedDictionary {
@@ -14,27 +12,35 @@ export class OrientedDictionary {
     static wordPositionToOrientedDictionaryKey(wordPosition: WordPosition): OrientedDictionaryKey {
         // this implies that the max size of a board is
         // 2^13 by 2^13
-        let key = wordPosition.start.x
-        key = key << 13
-        key = key + wordPosition.start.y
-        key = key << 13
-        key = key + wordPosition.end.x
-        key = key << 13
-        key = key + wordPosition.end.y
-        return key
+        // let key = wordPosition.start.x
+        // key = key << 13
+        // key = key + wordPosition.start.y
+        // key = key << 13
+        // key = key + wordPosition.end.x
+        // key = key << 13
+        // key = key + wordPosition.end.y
+        // return key
+        return wordPosition.start.x * Math.pow(2, 13 * 3) + wordPosition.start.y * Math.pow(2, 13 * 2) + wordPosition.end.x * Math.pow(2, 13) + wordPosition.end.y
     }
 
     static orientedDictionaryKeyToWordPosition(key: OrientedDictionaryKey): WordPosition {
-        const bitMask = 8191
-        const endY = key & bitMask
-        key = key >> 13
-        const endX = key & bitMask
-        key = key >> 13
-        const startY = key & bitMask
-        key = key >> 13
+        // const bitMask = 8191
+        // const endY = key & bitMask
+        // key = key >> 13
+        // const endX = key & bitMask
+        // key = key >> 13
+        // const startY = key & bitMask
+        // key = key >> 13
+        const startX = Math.floor(key / Math.pow(2, 13 * 3))
+        key -= startX * Math.pow(2, 13 * 3)
+        const startY = Math.floor(key / Math.pow(2, 13 * 2))
+        key -= startY * Math.pow(2, 13 * 2)
+        const endX = Math.floor(key / Math.pow(2, 13))
+        key -= endX * Math.pow(2, 13)
+        const endY = key
         return {
             start: {
-                x: key,
+                x: startX,
                 y: startY
             },
             end: {
@@ -73,7 +79,7 @@ export class OrientedDictionary {
      * Get the words in the dictionary in sorted order
      * @returns the words in the dictionary in order of starting positions
      */
-    getWords(): Word[] {
+    getSortedWords(): Word[] {
         return this.getSortedEntries().map(([key, word]) => word)
     }
 
@@ -82,6 +88,7 @@ export class OrientedDictionary {
             const wordPosition = OrientedDictionary.orientedDictionaryKeyToWordPosition(key)
             const wordText: string = word.squareValues.map((squareValue: SquareValue) => squareValueToString(squareValue)).join('')
             console.log(`\t(${wordPosition.start.x}, ${wordPosition.start.y}) to (${wordPosition.end.x}, ${wordPosition.end.y})`)
+            console.log(`\tkey: ${key}`)
             console.log(`\t${wordText.trim() === '' ? '[No word]' : wordText}`)
             console.log(`\t${word.clue === '' ? '[No clue]' : word.clue}`)
             console.log()
@@ -96,36 +103,5 @@ export class CrosswordDictionary {
     constructor() {
         this.horizontalDictionary = new OrientedDictionary(Orientation.HORIZONTAL)
         this.verticalDictionary = new OrientedDictionary(Orientation.VERTICAL)
-    }
-}
-
-export default class Dictionary {
-    readonly map: Map<string, Word>
-    // TODO: there's a cannonical sort of the elements of the dictionary
-    //       which depends on the location of the starting index of the word
-    //       this is not currently reflected, though it does suggest
-    //       that maybe a custom type might be good for either the dictionary
-    //       or the combination horizontal and vertical dictionary
-
-    constructor() {
-        this.map = new Map<string, Word>()
-    }
-
-    delete(wordPosition: WordPosition): boolean {
-        return this.map.delete(JSON.stringify(wordPosition))
-    }
-
-    get(wordPosition: WordPosition): Word | undefined {
-        return this.map.get(JSON.stringify(wordPosition))
-    }
-
-    set(wordPosition: WordPosition, word: Word): void {
-        this.map.set(JSON.stringify(wordPosition), word)
-    }
-
-    forEach(callback: (word: Word, wordPosition: WordPosition) => void): void {
-        this.map.forEach((word: Word, wordPositionString: string) => {
-            callback(word, JSON.parse(wordPositionString))
-        })
     }
 }
