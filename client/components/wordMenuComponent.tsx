@@ -58,28 +58,34 @@ export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, h
         const orientationString = orientation === Orientation.HORIZONTAL ? "Horizontal" : "Vertical"
         const clueInForm = orientation === Orientation.HORIZONTAL ? horizontalClueInForm : verticalClueInForm
         const changeClueHandler = orientation === Orientation.HORIZONTAL ? handleChangeHorizontalClue : handleChangeVerticalClue
+        const wordString = word.squareValues.map((squareValue) => squareValueToString(squareValue)).join('')
         return (
-            <div>
-                <div>{orientationString} Word</div>
-                <div>{word.squareValues.map((squareValue) => squareValueToString(squareValue)).join('')}</div>
-                <input
-                    value={clueInForm}
-                    onChange={changeClueHandler}
-                ></input>
+            <div className="flex flex-col gap-y-2 bg-gray-100 p-4">
+                <h2 className="text-lg">{orientationString} Word: {wordString}</h2>
+                <form className="flex flex-col gap-y-2">
+                    <label
+                        htmlFor={`${orientationString}-clue-input`}
+                    >{orientationString} Clue:</label>
+                    <input
+                        className="h-8 w-full bg-white border border-gray-500 p-2 rounded-md"
+                        value={clueInForm}
+                        onChange={changeClueHandler}
+                    ></input>
+                </form>
             </div>
         ) 
     }
 
     return (
-        <div className="flex flex-col m-6 gap-y-2">
-            <form>
+        <div className="flex flex-col m-6 gap-y-6">
+            <form className="flex flex-col gap-y-6 bg-gray-100 p-4">
                 <div className="flex flex-col gap-y-1">
                     <label
                         htmlFor="square-value-input"
                     >Square Value</label>
                     <input
                         id="square-value-input"
-                        className="h-8 w-8 bg-gray-100 border border-gray-300 p-2"
+                        className="h-10 w-10 bg-white border border-gray-500 p-2 text-lg text-center rounded-md"
                         value={squareValueInForm}
                         disabled={isDarkSquareInForm}
                         type={'text'}
