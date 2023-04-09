@@ -31,7 +31,7 @@ export const SquareComponent = ({ squareValue, width, height, handleClick, isSel
             onClick={handleClick}
         >
             <div>
-                {squareValueToString(squareValue)}
+                {squareValue === SquareValue.DARK_SQUARE ? '' : squareValueToString(squareValue)}
             </div>
         </div>
     )
