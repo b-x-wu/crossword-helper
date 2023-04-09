@@ -15,7 +15,7 @@ export const CrosswordComponent = ({ crossword }: CrosswordComponentProps): JSX.
     const [squareArray, setSquareArray] = useState<Square[]>(crossword.squareArray.flat())
 
     useEffect(() => {
-        if (selectedSquare == null) {
+        if (selectedSquare == null || selectedSquare.value === SquareValue.DARK_SQUARE) {
             setSelectedHorizontalWordPosition(null)
             setSelectedVerticalWordPosition(null)
             return
