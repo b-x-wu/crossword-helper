@@ -11,26 +11,11 @@ export class OrientedDictionary {
 
     static wordPositionToOrientedDictionaryKey(wordPosition: WordPosition): OrientedDictionaryKey {
         // this implies that the max size of a board is
-        // 2^13 by 2^13
-        // let key = wordPosition.start.x
-        // key = key << 13
-        // key = key + wordPosition.start.y
-        // key = key << 13
-        // key = key + wordPosition.end.x
-        // key = key << 13
-        // key = key + wordPosition.end.y
-        // return key
+        // 2^13 by 2^13 which seems perfectly fine to me
         return wordPosition.start.x * Math.pow(2, 13 * 3) + wordPosition.start.y * Math.pow(2, 13 * 2) + wordPosition.end.x * Math.pow(2, 13) + wordPosition.end.y
     }
 
     static orientedDictionaryKeyToWordPosition(key: OrientedDictionaryKey): WordPosition {
-        // const bitMask = 8191
-        // const endY = key & bitMask
-        // key = key >> 13
-        // const endX = key & bitMask
-        // key = key >> 13
-        // const startY = key & bitMask
-        // key = key >> 13
         const startX = Math.floor(key / Math.pow(2, 13 * 3))
         key -= startX * Math.pow(2, 13 * 3)
         const startY = Math.floor(key / Math.pow(2, 13 * 2))
@@ -63,6 +48,14 @@ export class OrientedDictionary {
     set(wordPosition: WordPosition, word: Word): void {
         const key = OrientedDictionary.wordPositionToOrientedDictionaryKey(wordPosition)
         this.map.set(key, word)
+    }
+
+    setClue(wordPosition: WordPosition, clue: string): void {
+        const word: Word | undefined = this.get(wordPosition)
+        if (word == null) {
+            throw new Error(`No word found in this position. wordPosition: ${JSON.stringify(wordPosition)}`)
+        }
+        word.clue = clue
     }
 
     forEach(callback: (word: Word, wordPosition: WordPosition) => void): void {
