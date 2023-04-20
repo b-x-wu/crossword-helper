@@ -77,6 +77,7 @@ export default class Crossword {
         }
     }
 
+    // TODO: change this to be square position based
     private isInBounds(x: number, y: number): boolean {
         return !(x < 0 || x >= this.width || y < 0 || y >= this.height)
     }
@@ -110,6 +111,7 @@ export default class Crossword {
         const word = this.dictionary.horizontalDictionary.get(wordPosition)
 
         if (word == null) {
+            console.log(JSON.stringify(wordPosition))
             throw new Error('Cannot find horizontal word at this square')
         }
 
@@ -217,6 +219,10 @@ export default class Crossword {
         }
 
         square.value = SquareValue.DARK_SQUARE
+        square.left = null
+        square.right = null
+        square.up = null
+        square.down = null
     }
 
     private mutateSquareFromDark(square: Square, newSquareValue: SquareValue): void {
@@ -238,26 +244,38 @@ export default class Crossword {
         let newHorizontalStartPosition: SquarePosition = square.position
         let newHorizontalEndPosition: SquarePosition = square.position
         
-        if (square.left != null) {
-            const leftWordData = this.getHorizontalWord(square.left)
+        const leftSquare = this.isInBounds(square.position.x - 1, square.position.y) ? this.getSquareAt({
+            x: square.position.x - 1,
+            y: square.position.y
+        }) : null
+
+        if (leftSquare != null && leftSquare.value !== SquareValue.DARK_SQUARE) {
+            const leftWordData = this.getHorizontalWord(leftSquare)
             if (leftWordData != null) {
                 this.dictionary.horizontalDictionary.delete(leftWordData.position)
                 newHorizontalStartPosition = leftWordData.position.start
                 newHorizontalWord.squareValues.unshift(...leftWordData.word.squareValues)
                 newHorizontalWord.length += leftWordData.word.length
             }
-            square.left.right = square
+            leftSquare.right = square
+            square.left = leftSquare
         }
+
+        const rightSquare = this.isInBounds(square.position.x + 1, square.position.y) ? this.getSquareAt({
+            x: square.position.x + 1,
+            y: square.position.y
+        }) : null
         
-        if (square.right != null) {
-            const rightWordData = this.getHorizontalWord(square.right)
+        if (rightSquare != null && rightSquare.value !== SquareValue.DARK_SQUARE) {
+            const rightWordData = this.getHorizontalWord(rightSquare)
             if (rightWordData != null) {
                 this.dictionary.horizontalDictionary.delete(rightWordData.position)
                 newHorizontalEndPosition = rightWordData.position.end
                 newHorizontalWord.squareValues.push(...rightWordData.word.squareValues)
                 newHorizontalWord.length += rightWordData.word.length
             }
-            square.right.left = square
+            rightSquare.left = square
+            square.right = rightSquare
         }
 
         this.dictionary.horizontalDictionary.set(
@@ -274,26 +292,38 @@ export default class Crossword {
         let newVerticalStartPosition: SquarePosition = square.position
         let newVerticalEndPosition: SquarePosition = square.position
         
-        if (square.up != null) {
-            const upWordData = this.getVerticalWord(square.up)
+        const upSquare = this.isInBounds(square.position.x, square.position.y - 1) ? this.getSquareAt({
+            x: square.position.x,
+            y: square.position.y - 1
+        }) : null
+
+        if (upSquare != null && upSquare.value !== SquareValue.DARK_SQUARE) {
+            const upWordData = this.getVerticalWord(upSquare)
             if (upWordData != null) {
                 this.dictionary.verticalDictionary.delete(upWordData.position)
                 newVerticalStartPosition = upWordData.position.start
                 newVerticalWord.squareValues.unshift(...upWordData.word.squareValues)
                 newVerticalWord.length += upWordData.word.length
             }
-            square.up.down = square
+            upSquare.down = square
+            square.up = upSquare
         }
         
-        if (square.down != null) {
-            const downWordData = this.getVerticalWord(square.down)
+        const downSquare = this.isInBounds(square.position.x, square.position.y + 1) ? this.getSquareAt({
+            x: square.position.x,
+            y: square.position.y + 1
+        }) : null
+
+        if (downSquare != null && downSquare.value !== SquareValue.DARK_SQUARE) {
+            const downWordData = this.getVerticalWord(downSquare)
             if (downWordData != null) {
                 this.dictionary.verticalDictionary.delete(downWordData.position)
                 newVerticalEndPosition = downWordData.position.end
                 newVerticalWord.squareValues.push(...downWordData.word.squareValues)
                 newVerticalWord.length += downWordData.word.length
             }
-            square.down.up = square
+            downSquare.up = square
+            square.down = downSquare
         }
 
         this.dictionary.verticalDictionary.set(
