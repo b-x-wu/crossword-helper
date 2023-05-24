@@ -1,8 +1,10 @@
 {
   "scripts": {
-    "start": "npx tsc && node ./dist/app.js"
+    "start": "npx tsc && node ./dist/app.js",
+    "start:db": "npx tsc && node ./dist/db_migration.js"
   },
   "devDependencies": {
+    "mongoose": "^7.2.0",
     "typescript": "^5.0.2"
   }
 }
