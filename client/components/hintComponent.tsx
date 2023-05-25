@@ -61,8 +61,14 @@ export const HintComponent = (props: HintComponentProps) => {
         )
     })
 
+    const clueHintElements = clueHints.map((clue, clueIdx) => {
+        return (
+            <div className='border-2 border-gray-300 p-1' key={clueIdx}>{clue}</div>
+        )
+    })
+
     return (
-        <div className='w-full h-fit p-2'>
+        <div className='w-full h-fit'>
             {wordHintElements.length === 0 ? <></> : 
                 <div className='flex flex-col gap-y-4'>
                     <div className='flex flex-row'>
@@ -70,6 +76,11 @@ export const HintComponent = (props: HintComponentProps) => {
                         <div className='h-full'>Clue Hints</div>
                     </div>
                     {wordHintElements}
+                </div>
+            }
+            {clueHintElements.length === 0 ? <></> :
+                <div className='h-fit w-full bg-gray-200'>
+                    {clueHintElements}
                 </div>
             }
         </div>
