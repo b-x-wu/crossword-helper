@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Orientation, Square, SquareValue, Word, squareValueToString, stringToSquareValue } from "../types/types"
+import { HintComponent } from "./hintComponent"
 interface WordMenuComponentProps {
     horizontalWord: Word | undefined
     verticalWord: Word | undefined
@@ -71,6 +72,9 @@ export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, h
                         value={clueInForm}
                         onChange={changeClueHandler}
                     ></input>
+                    <HintComponent
+                        word={wordString}
+                    />
                 </form>
             </div>
         ) 

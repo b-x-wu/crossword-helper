@@ -1,10 +1,12 @@
 import express, { Request } from 'express'
+import cors from 'cors'
 import { MongooseConnection, WordHintModel } from './db'
 
 const app = express()
+app.use(cors())
 
 app.get('/word_hint', (req: Request<{}, any, any, { word: string }>, res) => {
-    const wordMatch: RegExp = RegExp(`^${req.query.word.replace('_', '\\w')}$`)
+    const wordMatch: RegExp = RegExp(`^${req.query.word.replaceAll('_', '\\w')}$`)
     WordHintModel.find({ word: { $regex: wordMatch } }).then((val) => {
         res.json(val)
     })
