@@ -1,32 +1,8 @@
 import mongoose from 'mongoose'
-import { type UpdateOneModel } from 'mongodb'
 import fs from 'fs'
 import csv from 'csv-parser'
 import path from 'path'
-
-interface WordHint {
-    word: string,
-    clues: string[]
-} // TODO: add sources to clues
-
-const wordHintSchema = new mongoose.Schema<WordHint>({
-    word: {
-        type: String,
-        required: true,
-        validate: {
-            validator: (v: string) => {
-                return /^[A-Z]+$/.test(v)
-            },
-            message: (props) => `Word must be all capital letters (${props.value})`
-        }
-    },
-    clues: {
-        type: [String],
-        required: true
-    }
-})
-
-const WordHintModel = mongoose.model<WordHint>('WordHint', wordHintSchema)
+import { MongooseConnection, WordHintModel } from './db'
 
 main().then(() => console.log('connected')).catch(console.log)
 
@@ -54,6 +30,6 @@ function migrateToDb() {
 }
 
 async function main() {
-    await mongoose.connect('mongodb://127.0.0.1:27017/crosswordhelper')
+    await MongooseConnection
     migrateToDb()
 }
