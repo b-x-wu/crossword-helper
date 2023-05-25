@@ -74,6 +74,7 @@ export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, h
                     ></input>
                     <HintComponent
                         word={wordString}
+                        clue={clueInForm}
                     />
                 </form>
             </div>
