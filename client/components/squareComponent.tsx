@@ -15,7 +15,7 @@ export const SquareComponent = ({ squareValue, width, height, handleClick, isSel
     const componentHeight = height == null ? '5em' : (typeof height === 'string' ? height : `${height}px`)
 
     let style: string = `flex items-center justify-center w-[${componentWidth}] h-[${componentHeight}] text-center border-2 border-black`
-    // TODO: this is probably a comically bad way to do this
+    // TODO: this is definitely a comically bad way to do this
     if (isSelected && squareValue === SquareValue.DARK_SQUARE) {
         style += ' bg-sky-950'
     } else if (isSelected) {
