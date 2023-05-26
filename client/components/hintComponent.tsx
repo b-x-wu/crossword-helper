@@ -106,9 +106,9 @@ export const HintComponent = (props: HintComponentProps) => {
         <div className='w-full h-fit'>
             {wordHintElements.length === 0 ? <></> : 
                 <div className='flex flex-col gap-y-4'>
-                    <div className='flex flex-row'>
+                    <div className='flex flex-row gap-x-8'>
                         <div className='h-full w-1/6'>Word Hints</div>
-                        <div className='h-full'>Clue Hints</div>
+                        <div className='h-full w-full'>Clue Hints</div>
                     </div>
                     {wordHintElements}
                 </div>

@@ -57,8 +57,6 @@ export default class Crossword {
                 length: this.height,
                 orientation: Orientation.VERTICAL
             }
-            // console.log(wordPosition)
-            console.log(OrientedDictionary.orientedDictionaryKeyToWordPosition(OrientedDictionary.wordPositionToOrientedDictionaryKey(wordPosition)))
             this.dictionary.verticalDictionary.set(wordPosition, word)
         }
 
