@@ -15,6 +15,25 @@ interface HintComponentProps {
     handleClueHintSelect: (squarePosition: SquarePosition, orientation: Orientation, wordString: string) => React.MouseEventHandler<HTMLDivElement>
 }
 
+// https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+const shuffle = <T,>(array: Array<T>): Array<T> => {
+  let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex != 0) {
+
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}
+
 export const HintComponent = (props: HintComponentProps) => {
     const [wordHints, setWordHints] = useState<WordHint[]>([])
     const [clueHints, setClueHints] = useState<string[]>([])
@@ -26,10 +45,10 @@ export const HintComponent = (props: HintComponentProps) => {
                 return res.json()
             }).then((data: WordHint[]) => {
                 setClueHints([])
-                setWordHints(data.slice(0, 10).map((wordHint) => {
+                setWordHints(shuffle(data).slice(0, 10).map((wordHint) => {
                     return {
                         word: wordHint.word,
-                        clues: wordHint.clues.slice(0, 10)
+                        clues: shuffle(wordHint.clues).slice(0, 10)
                     }
                 }))
             }).catch(console.log)
@@ -42,7 +61,7 @@ export const HintComponent = (props: HintComponentProps) => {
                 return res.json()
             }).then((data: string[]) => {
                 setWordHints([])
-                setClueHints(data.slice(0, 10))
+                setClueHints(shuffle(data).slice(0, 10))
             }).catch(console.log)
             return
         }
