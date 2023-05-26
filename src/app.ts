@@ -1,26 +1,29 @@
-import Crossword from "./crossword";
-import { SquarePosition, SquareValue } from "./types";
+import express, { Request } from 'express'
+import cors from 'cors'
+import { MongooseConnection, WordHintModel } from './db'
 
-const crossword: Crossword = new Crossword(5, 5)
+const app = express()
+app.use(cors())
 
-// fill board with alphabet
-for (let x = 0; x < 5; x++) {
-    for (let y = 0; y < 5; y++) {
-        const value: SquareValue = (5 * x + y) + 1
-        const position: SquarePosition = {x, y}
-        crossword.mutateSquareAtPosition(position, value)
-    }
-}
-console.log('INITIAL BOARD')
-crossword.printBoard()
-crossword.printDictionary()
+app.get('/word_hint', (req: Request<{}, any, any, { word: string }>, res) => {
+    const wordMatch: RegExp = RegExp(`^${req.query.word.replaceAll('_', '\\w')}$`)
+    WordHintModel.find({ word: { $regex: wordMatch } }).then((val) => {
+        res.json(val)
+    })
+})
 
-console.log('ADDING DARK SQUARE')
-crossword.mutateSquareAtPosition({x: 1, y: 1}, SquareValue.DARK_SQUARE)
-crossword.printBoard()
-crossword.printDictionary()
+app.get('/clue_hint', (req: Request<{}, any, any, { word: string }>, res) => {
+    WordHintModel.find({ word: req.query.word }).then((val) => {
+        if (val.length == 0) {
+            res.json([])
+            return
+        }
+        res.json(val[0].clues)
+    })
+})
 
-console.log('REMOVING DARK SQUARE')
-crossword.mutateSquareAtPosition({x: 1, y: 1}, SquareValue.Z)
-crossword.printBoard()
-crossword.printDictionary()
+app.listen('3000', async () => {
+    console.log('Listening on port 3000')
+    await MongooseConnection
+    console.log('Connected to db')
+})
