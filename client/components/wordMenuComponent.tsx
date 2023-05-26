@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Orientation, Square, SquareValue, Word, squareValueToString, stringToSquareValue } from "../types/types"
+import { Orientation, SquarePosition, SquareValue, Word, squareValueToString, stringToSquareValue } from "../types/types"
 import { HintComponent } from "./hintComponent"
 interface WordMenuComponentProps {
     horizontalWord: Word | undefined
@@ -8,8 +8,10 @@ interface WordMenuComponentProps {
     handleChangeHorizontalClue: React.ChangeEventHandler<HTMLInputElement>
     handleChangeVerticalClue: React.ChangeEventHandler<HTMLInputElement>
     handleMutateSquare: (newSquareValue: SquareValue) => React.ChangeEventHandler<HTMLInputElement>
+    squarePosition: SquarePosition
+    handleWordHintSelect: (squarePosition: SquarePosition, orientation: Orientation, wordString: string) => React.MouseEventHandler<HTMLDivElement>
 }
-export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, handleChangeHorizontalClue, handleChangeVerticalClue, handleMutateSquare }: WordMenuComponentProps): JSX.Element => {
+export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, handleChangeHorizontalClue, handleChangeVerticalClue, handleMutateSquare, squarePosition, handleWordHintSelect }: WordMenuComponentProps): JSX.Element => {
     const [isDarkSquareInForm, setIsDarkSquareInForm] = useState<boolean>(squareValue === SquareValue.DARK_SQUARE)
     const [squareValueInForm, setSquareValueInForm] = useState<string>(squareValueToString(squareValue))
     const [horizontalClueInForm, setHorizontalClueInForm] = useState<string>('')
@@ -75,6 +77,9 @@ export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, h
                     <HintComponent
                         word={wordString}
                         clue={clueInForm}
+                        squarePosition={squarePosition}
+                        orientation={orientation}
+                        handleWordHintSelect={handleWordHintSelect}
                     />
                 </form>
             </div>

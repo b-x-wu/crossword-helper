@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import Crossword from "../types/crossword"
-import { Orientation, Square, SquareValue, Word, WordPosition } from "../types/types"
+import { Orientation, Square, SquarePosition, SquareValue, Word, WordPosition, stringToSquareValue } from "../types/types"
 import { BoardComponent } from "./boardComponent"
 import { WordMenuComponent } from "./wordMenuComponent"
 import { OrientedDictionary } from "../types/dictionary"
@@ -91,6 +91,28 @@ export const CrosswordComponent = ({ crossword }: CrosswordComponentProps): JSX.
         }
     }
 
+    const handleWordHintSelect = (squarePosition: SquarePosition, orientation: Orientation, wordString: string): React.MouseEventHandler<HTMLDivElement> => {
+        return () => {
+            if (orientation === Orientation.HORIZONTAL) {
+                const wordPosition = crossword.getHorizontalWord(crossword.getSquareAt(squarePosition))?.position
+                if (wordPosition == null) { return }
+                for (let x = wordPosition.start.x; x <= wordPosition.end.x; x++) {
+                    const squareToMutate = crossword.getSquareAt({ x, y: wordPosition.start.y })
+                    crossword.mutateSquare(squareToMutate, stringToSquareValue(wordString[x - wordPosition.start.x]))
+                }
+                setSquareArray(crossword.squareArray.flat().map((square) => ({...square})))
+                return
+            }
+            const wordPosition = crossword.getVerticalWord(crossword.getSquareAt(squarePosition))?.position
+            if (wordPosition == null) { return }
+            for (let y = wordPosition.start.y; y <= wordPosition.end.y; y++) {
+                const squareToMutate = crossword.getSquareAt({ x: wordPosition.start.x, y })
+                crossword.mutateSquare(squareToMutate, stringToSquareValue(wordString[y - wordPosition.start.y]))
+            }
+            setSquareArray(crossword.squareArray.flat().map((square) => ({...square})))
+        }
+    }
+
     return (
         <>
             <BoardComponent
@@ -112,6 +134,8 @@ export const CrosswordComponent = ({ crossword }: CrosswordComponentProps): JSX.
                     handleChangeVerticalClue={handleChangeVerticalClue}
                     handleMutateSquare={handleMutateSquare}
                     squareValue={selectedSquare.value}
+                    squarePosition={selectedSquare.position}
+                    handleWordHintSelect={handleWordHintSelect}
                 />
             }
         </>

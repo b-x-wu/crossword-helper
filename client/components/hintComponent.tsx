@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Orientation, SquarePosition } from '../types/types'
 
 interface WordHint {
     word: string,
@@ -7,7 +8,10 @@ interface WordHint {
 
 interface HintComponentProps {
     word: string,
-    clue: string
+    clue: string,
+    squarePosition: SquarePosition,
+    orientation: Orientation,
+    handleWordHintSelect: (squarePosition: SquarePosition, orientation: Orientation, wordString: string) => React.MouseEventHandler<HTMLDivElement>
 }
 
 export const HintComponent = (props: HintComponentProps) => {
@@ -34,6 +38,9 @@ export const HintComponent = (props: HintComponentProps) => {
         // word is complete. look only for clues
         if (props.clue === '') {
             fetch(`http://localhost:3000/clue_hint?word=${props.word}`).then((res) => {
+                if (res.status === 404) {
+                    return Promise.resolve([])
+                }
                 return res.json()
             }).then((data: string[]) => {
                 setWordHints([])
@@ -53,7 +60,7 @@ export const HintComponent = (props: HintComponentProps) => {
         })
         return (
             <div className='flex flex-row gap-x-8' key={wordHintIdx}>
-                <div className='h-full w-1/6'>{wordHint.word}</div>
+                <div className='h-full w-1/6 cursor-pointer' onClick={props.handleWordHintSelect(props.squarePosition, props.orientation, wordHint.word)}>{wordHint.word}</div>
                 <div className='h-fit max-h-24 w-full overflow-auto bg-gray-200'>
                     {clueElements}
                 </div>
@@ -79,8 +86,11 @@ export const HintComponent = (props: HintComponentProps) => {
                 </div>
             }
             {clueHintElements.length === 0 ? <></> :
-                <div className='h-fit w-full bg-gray-200'>
-                    {clueHintElements}
+                <div className='flex flex-col gap-y-4'>
+                    <div>Clue Hints</div>
+                    <div className='h-fit w-full bg-gray-200'>
+                        {clueHintElements}
+                    </div>
                 </div>
             }
         </div>
