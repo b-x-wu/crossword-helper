@@ -38,9 +38,6 @@ export const HintComponent = (props: HintComponentProps) => {
         // word is complete. look only for clues
         if (props.clue === '') {
             fetch(`http://localhost:3000/clue_hint?word=${props.word}`).then((res) => {
-                if (res.status === 404) {
-                    return Promise.resolve([])
-                }
                 return res.json()
             }).then((data: string[]) => {
                 setWordHints([])
