@@ -103,6 +103,7 @@ export const CrosswordComponent = ({ crossword }: CrosswordComponentProps): JSX.
                 setSquareArray(crossword.squareArray.flat().map((square) => ({...square})))
                 return
             }
+
             const wordPosition = crossword.getVerticalWord(crossword.getSquareAt(squarePosition))?.position
             if (wordPosition == null) { return }
             for (let y = wordPosition.start.y; y <= wordPosition.end.y; y++) {
@@ -110,6 +111,26 @@ export const CrosswordComponent = ({ crossword }: CrosswordComponentProps): JSX.
                 crossword.mutateSquare(squareToMutate, stringToSquareValue(wordString[y - wordPosition.start.y]))
             }
             setSquareArray(crossword.squareArray.flat().map((square) => ({...square})))
+        }
+    }
+
+    const handleClueHintSelect = (squarePosition: SquarePosition, orientation: Orientation, clueString: string): React.MouseEventHandler<HTMLDivElement> => {
+        return () => {
+            if (orientation === Orientation.HORIZONTAL) {
+                const wordInfo = crossword.getHorizontalWord(crossword.getSquareAt(squarePosition))
+                if (wordInfo == null) { return }
+                wordInfo.word.clue = clueString
+                if (selectedHorizontalWordPosition == null) { return }
+                setSelectedHorizontalWordPosition({...selectedHorizontalWordPosition})
+                return
+            }
+
+            const wordInfo = crossword.getVerticalWord(crossword.getSquareAt(squarePosition))
+            if (wordInfo == null) { return }
+            wordInfo.word.clue = clueString
+            if (selectedVerticalWordPosition == null) { return }
+            setSelectedVerticalWordPosition({...selectedVerticalWordPosition})
+            return
         }
     }
 
@@ -136,6 +157,7 @@ export const CrosswordComponent = ({ crossword }: CrosswordComponentProps): JSX.
                     squareValue={selectedSquare.value}
                     squarePosition={selectedSquare.position}
                     handleWordHintSelect={handleWordHintSelect}
+                    handleClueHintSelect={handleClueHintSelect}
                 />
             }
         </>

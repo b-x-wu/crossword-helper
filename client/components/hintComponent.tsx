@@ -12,6 +12,7 @@ interface HintComponentProps {
     squarePosition: SquarePosition,
     orientation: Orientation,
     handleWordHintSelect: (squarePosition: SquarePosition, orientation: Orientation, wordString: string) => React.MouseEventHandler<HTMLDivElement>
+    handleClueHintSelect: (squarePosition: SquarePosition, orientation: Orientation, wordString: string) => React.MouseEventHandler<HTMLDivElement>
 }
 
 export const HintComponent = (props: HintComponentProps) => {
@@ -53,7 +54,18 @@ export const HintComponent = (props: HintComponentProps) => {
 
     const wordHintElements = wordHints.map((wordHint, wordHintIdx) => {
         const clueElements = wordHint.clues.map((clue, clueIdx) => {
-            return <div key={clueIdx} className='border-2 border-gray-300 p-1'>{clue}</div>
+            return (
+                <div
+                    key={clueIdx}
+                    className='border-2 border-gray-300 p-1 cursor-pointer'
+                    onClick={(event) => {
+                        props.handleWordHintSelect(props.squarePosition, props.orientation, wordHint.word)(event)
+                        props.handleClueHintSelect(props.squarePosition, props.orientation, clue)(event)
+                    }}
+                >
+                    {clue}
+                </div>
+            )
         })
         return (
             <div className='flex flex-row gap-x-8' key={wordHintIdx}>
@@ -67,7 +79,7 @@ export const HintComponent = (props: HintComponentProps) => {
 
     const clueHintElements = clueHints.map((clue, clueIdx) => {
         return (
-            <div className='border-2 border-gray-300 p-1' key={clueIdx}>{clue}</div>
+            <div className='border-2 border-gray-300 p-1 cursor-pointer' onClick={props.handleClueHintSelect(props.squarePosition, props.orientation, clue )} key={clueIdx}>{clue}</div>
         )
     })
 

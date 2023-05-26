@@ -10,8 +10,9 @@ interface WordMenuComponentProps {
     handleMutateSquare: (newSquareValue: SquareValue) => React.ChangeEventHandler<HTMLInputElement>
     squarePosition: SquarePosition
     handleWordHintSelect: (squarePosition: SquarePosition, orientation: Orientation, wordString: string) => React.MouseEventHandler<HTMLDivElement>
+    handleClueHintSelect: (squarePosition: SquarePosition, orientation: Orientation, wordString: string) => React.MouseEventHandler<HTMLDivElement>
 }
-export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, handleChangeHorizontalClue, handleChangeVerticalClue, handleMutateSquare, squarePosition, handleWordHintSelect }: WordMenuComponentProps): JSX.Element => {
+export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, handleChangeHorizontalClue, handleChangeVerticalClue, handleMutateSquare, squarePosition, handleWordHintSelect, handleClueHintSelect }: WordMenuComponentProps): JSX.Element => {
     const [isDarkSquareInForm, setIsDarkSquareInForm] = useState<boolean>(squareValue === SquareValue.DARK_SQUARE)
     const [squareValueInForm, setSquareValueInForm] = useState<string>(squareValueToString(squareValue))
     const [horizontalClueInForm, setHorizontalClueInForm] = useState<string>('')
@@ -80,6 +81,7 @@ export const WordMenuComponent = ({ horizontalWord, verticalWord, squareValue, h
                         squarePosition={squarePosition}
                         orientation={orientation}
                         handleWordHintSelect={handleWordHintSelect}
+                        handleClueHintSelect={handleClueHintSelect}
                     />
                 </form>
             </div>
